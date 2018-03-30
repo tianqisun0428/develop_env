@@ -9,8 +9,6 @@ func SetComment()
         call setline(1, '//C++ file')
     elseif expand("%:e") == 'h'
         call setline(1, '//头文件 file')
-    elseif expand("%:e") == 'py'
-        call setline(1, '//python file')
     endif
     call append(1, '//***********************************************')
     call append(2, '//      Filename: '.expand("%"))
@@ -22,6 +20,23 @@ func SetComment()
 "    call append(10, '')
 endfunc
 "SET Comment END"
+"
+"SET PythonComment START
+autocmd BufNewFile *py exec ":call SetPythonComment()" |normal 10Go
+func SetPythonComment()
+    if expand("%:e") == 'py'
+        call setline(1, '# python file')
+    endif
+    call append(1, '# ***********************************************')
+    call append(2, '#       Filename: '.expand("%"))
+    call append(3, '#         Author: lgy - liguiyuan91@163.com')
+    call append(4, '#    Description: ---')
+    call append(5, '#         Create: '.strftime("%Y-%m-%d %H:%M:%S"))
+    call append(6, '#  Last Modified: '.strftime("%Y-%m-%d %H:%M:%S"))
+    call append(7, '# ***********************************************')
+"    call append(10, '')
+endfunc
+"SET PythonComment END"
 "
 "撤销通过方向键移动光标
 noremap <Up> <Nop>
@@ -219,6 +234,7 @@ nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nnoremap <leader>gi :YcmCompleter GoToImprecise<CR>
 let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
+let g:ycm_min_num_of_chars_for_completion=2 " 从第2个键入字符就开始罗列匹配项
 "set error or warning signs
 let g:ycm_error_symbol='e>'
 let g:ycm_warning_symbol='w>'
@@ -238,7 +254,7 @@ let g:ycm_semantic_triggers={
 let g:ycm_always_populate_location_list=1
 let g:ycm_open_loclist_on_ycm_diags=1
 let g:ycm_cache_omnifunc=0
-let g:ycm_python_binary_path='/usr/local/bin/python3'
+let g:ycm_python_binary_path='/usr/bin/python3'
 "autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 "inoremap <expr><CR>     pumvisible() ? "\<C-y>" : "<CR>"
 "inoremap <expr><Down>   pumvisible() ? "\<C-n>" : "<Down>"
