@@ -1,12 +1,12 @@
-# 升级vim到vim8的步骤
-
 [TOC]
 
-###vim7爆出严重安全漏洞，升级到vm8，过程如下：
+# 升级vim到vim8的步骤
+
+### vim7爆出严重安全漏洞，升级到vm8，过程如下：
 
 - 首先卸载原有版本的vim
 
-  ​	`yum remove vim -y`
+  `yum remove vim -y`
 
 - 下载vim需要的一些安装包`nvurse`,主要作用是提供字符终端处理库
 
@@ -87,7 +87,7 @@ yum install python-devel
 
 
 
-###利用Git安装 最简单也是最有效的方法
+### 利用Git安装 最简单也是最有效的方法
 
 1. 获取Vim仓库：   
 
