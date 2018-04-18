@@ -1,5 +1,5 @@
 "SET Comment START
-autocmd BufNewFile *.php,*.js,*.cc,*.h exec ":call SetComment()" |normal 10Go
+autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c exec ":call SetComment()" |normal 10Go
 func SetComment()
     if expand("%:e") == 'php'
         call setline(1, "<?php")
@@ -9,6 +9,8 @@ func SetComment()
         call setline(1, '//C++ file')
     elseif expand("%:e") == 'h'
         call setline(1, '//头文件 file')
+    elseif expand("%:e") == 'c'
+        call setline(1, '//c file')
     endif
     call append(1, '//***********************************************')
     call append(2, '//      Filename: '.expand("%"))
