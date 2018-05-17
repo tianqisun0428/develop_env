@@ -103,7 +103,17 @@ Plugin 'davidhalter/jedi-vim'
 Plugin 'nvie/vim-flake8'
 "pep8-indent用于自动缩进
 Plugin 'Vimjas/vim-python-pep8-indent'
+"异步运行shell命令，并在同框中显示
+Plugin 'skywind3000/asyncrun.vim'
 
+" 自动打开 quickfix window ，高度为 10
+let g:asyncrun_open = 10
+
+" 任务结束时候响铃提醒
+let g:asyncrun_bell = 1
+
+" 设置 F10 打开/关闭 Quickfix 窗口
+nnoremap <F10> :call asyncrun#quickfix_toggle(10)<cr>
 
 set encoding=utf-8 " Set default encoding to UTF-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
