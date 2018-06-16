@@ -29,11 +29,21 @@ yum install ncurses-devel-5.9-13.20130511.el7.x86_64.rpm
   make install
   ```
 
+- 支持python的安装
+
+```
+./configure  --enable-pythoninterp=yes --with-python-config-dir=/usr/lib64/python2.7/config
+make
+make install
+```
+
+
+
 - 编辑文件：设定其为默认程序
 
   ```
   /usr/local/bin/vim /etc/profile.d/path.sh
-
+  
   ```
 
 - 编辑shell脚本，添加环境变量
@@ -69,8 +79,26 @@ yum install ncurses-devel-5.9-13.20130511.el7.x86_64.rpm
 ​	2、解决方法:重新编译安装Vim,开启Vim的Python支持,即可。
 
 ```
-./configure  --enable-pythoninterp=yes --with-python-config-dir=/usr/lib64/python2.6/config
+先执行一下命令 make distclean，因为之前有cache产生，会报以下问题
+configure: loading cache auto/config.cache
+configure: error: `CC' was set to `' in the previous run
+configure: error: `CFLAGS' was set to `' in the previous run
+configure: error: `LDFLAGS' was set to `' in the previous run
+configure: error: `CPPFLAGS' was set to `' in the previous run
+configure: error: in `/root/vim/src':
+configure: error: changes in the environment can compromise the build
+configure: error: run `make distclean' and/or `rm auto/config.cache' and start over
+
 ```
+
+```
+./configure  --enable-pythoninterp=yes --with-python-config-dir=/usr/lib64/python2.7/config
+
+make 
+make install
+```
+
+
 
 提示：可能遇到下面的问题
 
