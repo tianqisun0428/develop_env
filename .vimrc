@@ -67,7 +67,8 @@ Bundle 'gmarik/vundle'
 Bundle 'drmingdrmer/xptemplate'
 Bundle 'Valloric/ListToggle'
 Bundle 'Valloric/YouCompleteMe'
-Bundle 'majutsushi/tagbar'
+"Bundle 'majutsushi/tagbar'
+Bundle 'ludovicchabant/vim-gutentags'
 Bundle 'jlanzarotta/bufexplorer'
 Bundle 'tabbar'
 Bundle 'a.vim'
@@ -89,6 +90,7 @@ Bundle 'Rykka/colorv.vim'
 Bundle 'Yggdroot/indentLine'
 "Bundle 'mattn/emmet-vim'
 Bundle 'docunext/closetag.vim'
+Bundle 'majutsushi/tagbar'
 Bundle 'posva/vim-vue'
 Bundle 'marijnh/tern_for_vim'
 Bundle 'joshdick/onedark.vim'
@@ -245,7 +247,8 @@ nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
 nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nnoremap <leader>gi :YcmCompleter GoToImprecise<CR>
-let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
+"let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
+"let g:ycm_show_diagnostics_ui  =  0                  "关闭语法提示
 let g:ycm_min_num_of_chars_for_completion=2 " 从第2个键入字符就开始罗列匹配项
 "set error or warning signs
 let g:ycm_error_symbol='e>'
@@ -410,3 +413,24 @@ func! CompileRunGcc()
         exec "!time python3 %"
         endif
     endfunc  
+"-------------------------start gutentags-------------------
+" gutentags搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归 "
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.project']
+
+" 所生成的数据文件的名称 "
+let g:gutentags_ctags_tagfile = '.tags'
+
+" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录 "
+let s:vim_tags = expand('~/.cache/tags')
+let g:gutentags_cache_dir = s:vim_tags
+" 检测 ~/.cache/tags 不存在就新建 "
+if !isdirectory(s:vim_tags)
+   silent! call mkdir(s:vim_tags, 'p')
+endif
+
+" 配置 ctags 的参数 "
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+"-------------------------end gutentags-------------------
