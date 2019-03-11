@@ -39,6 +39,9 @@ Bundle 'joshdick/onedark.vim'
 Bundle 'DoxygenToolkit.vim'
 "成对插入或删除括号，parens，引号。
 Bundle 'jiangmiao/auto-pairs'
+"markdown插件，顺序是tabular要在vim-markdown之前
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
 "toml文件格式
 Bundle 'cespare/vim-toml'
 "Bundle 'SirVer/ultisnips'
@@ -73,6 +76,8 @@ Plugin 'nvie/vim-flake8'
 Plugin 'Vimjas/vim-python-pep8-indent'
 "异步运行shell命令，并在同框中显示
 Plugin 'skywind3000/asyncrun.vim'
+"无干扰写作, 专注模式
+Plugin 'junegunn/goyo.vim'
 ""-------------------------end 插件安装-------------------
 
 
@@ -95,7 +100,7 @@ nmap <F6> :lnext<cr>
 nmap <F7> :lprevious<cr>
 
 "在可用的情况下，尝试更改缓冲区以纠正当前行上的诊断错误或警告。如果有多个建议可用，则会显示选项并可以选择一个。
-map <F9> :YcmCompleter FixIt<CR>
+"map <F9> :YcmCompleter FixIt<CR>
 
 " 设置 F10 打开/关闭 Quickfix 窗口
 nnoremap <F10> :call asyncrun#quickfix_toggle(10)<cr>
@@ -111,6 +116,7 @@ nmap <leader>y :.w! ~/.vbuf<cr>
 "将内容追加到临时文件末尾
 vmap <leader>Y :w! >> ~/.vbuf<cr>
 nmap <leader>Y :.w! >> ~/.vbuf<cr>
+"粘贴~/.vbuf的内容到当前光标下
 nmap <leader>tt :r ~/.vbuf<cr>
 
 """行号显示与取消快捷键
@@ -207,12 +213,14 @@ set cc=120
 "总显示最后一个窗口的状态行；
     "设为1则窗口数多于一个的时候显示最后一个窗口的状态行； "0不显示最后一个窗口的状态行
 set laststatus=2
+"imap空格映射的标志位，表示F9的控制标志位, 初始设置为0，对于非代码文件是不映射的
+let g:equ=0
 "-------------------------end 一些特征设置-------------------
 
 
 "-------------------------start 根据文件后缀添加相应的头部注释-------------------
 "SET Comment START
-autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c exec ":call SetComment()" |normal 10Go
+autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c exec ":call SetComment()" | exec ":call SetimapFuncCtl()"  |normal 10Go
 func SetComment()
     if expand("%:e") == 'php'
         call setline(1, "<?php")
@@ -237,7 +245,7 @@ endfunc
 "SET Comment END"
 "
 "SET PythonComment START
-autocmd BufNewFile *py exec ":call SetPythonComment()" |normal 10Go
+autocmd BufNewFile *py exec ":call SetPythonComment()" | exec ":call SetimapFuncCtl()"  |normal 10Go
 func SetPythonComment()
     if expand("%:e") == 'py'
         call setline(1, '# python file')
@@ -263,23 +271,6 @@ else
 set t_Co=256
 endif
 "--------------------end vim man.vim的配置-------------
-
-
-"-------- start 特殊符号的自动缩进-------------
-ino , ,<SPACE>
-ino ; ;<SPACE>
-ino <= <SPACE><=<SPACE>
-ino => <SPACE>=><SPACE>
-ino *= <SPACE>*=<SPACE>
-ino /= <SPACE>/=<SPACE>
-ino >> <SPACE>>><SPACE>
-ino << <SPACE><<<SPACE>
-ino >= <SPACE>>=<SPACE>
-ino == <SPACE>==<SPACE>
-ino += <SPACE>+=<SPACE>
-ino && <SPACE>&&<SPACE>
-ino != <SPACE>!=<SPACE>
-"-------- end 特殊服务的自动缩进-------------
 
 
 "-------------------------start 按F9一键编译并运行-------------------
@@ -404,11 +395,6 @@ let g:indentLine_color_term  =         000
 
 
 "------------------------------- start 设置= + - * 前后自动空格-------------------
-let g:equ=1
-if exists("g:equ")
-inoremap = <c-r>=EqualSign('=')<CR>
-inoremap + <c-r>=EqualSign('+')<CR>
-endif
 
 function! EqualSign(char)
 let ex1 = getline('.')[col('.') - 3]
@@ -585,3 +571,74 @@ let tern_show_argument_hints='on_hold'
 autocmd FileType javascript nnoremap <leader>d :TernDef<CR>
 autocmd FileType javascript setlocal omnifunc=tern#Complete
 "----------------------------------end tern_for_vim-----------------------------------------
+"
+"-------------------------start vim-markdown----------------------
+"设置不折叠
+"let g:vim_markdown_folding_disabled = 1
+"let g:vim_markdown_toc_autofit = 1
+"set conceallevel=2
+"let g:vim_markdown_conceal  =  0
+"
+" gx: open the link under the cursor 
+autocmd BufNewFile,BufRead *.md set filetype=markdown
+"这里设置不折叠
+let g:vim_markdown_folding_disabled=1       "折叠
+let g:vim_markdown_frontmatter=1
+"隐藏功能，隐藏了一些符号，比如加粗*, 代码``, 提高显示效果
+let g:vim_markdown_conceal = 2
+set concealcursor=""
+"如果安装了vim-markdow的同时又安装了indentLine的话就需要设置这个，否则隐藏功能不好用
+"当光标在此行的时候也不显示隐藏的符号，只有选中才显示。
+let g:indentLine_concealcursor = ''
+" 打开文本目录
+nnoremap <Leader>to :Toc <CR>
+nnoremap <Leader>tp :MarkdownPreview <CR>
+nnoremap <Leader>tc :MarkdownPreviewClose <CR>
+" 格式化表格
+nnoremap <Leader>tf :TableFormat <CR>
+
+"-------------------------end vim-markdown----------------------
+"
+"------------------start-imapFunc()-----------
+"设置映射函数，实现在写c/c++代码是能自动填充空格
+func SetimapFunc()
+    ino , ,<SPACE>
+    ino ; ;<SPACE>
+    ino <= <SPACE><=<SPACE>
+    ino => <SPACE>=><SPACE>
+    ino *= <SPACE>*=<SPACE>
+    ino /= <SPACE>/=<SPACE>
+    ino >> <SPACE>>><SPACE>
+    ino << <SPACE><<<SPACE>
+    ino >= <SPACE>>=<SPACE>
+    ino == <SPACE>==<SPACE>
+    ino += <SPACE>+=<SPACE>
+    ino && <SPACE>&&<SPACE>
+    ino != <SPACE>!=<SPACE>
+    inoremap = <c-r>=EqualSign('=')<CR>
+    inoremap + <c-r>=EqualSign('+')<CR>
+
+endfunc
+    
+"实现按F9控制imap的映射的开与关    
+nnoremap <F9> :call SetimapFuncCtl()<CR>
+func SetimapFuncCtl()
+    if g:equ == 1
+        imapclear
+        let g:equ = 0
+    else
+        exec "call SetimapFunc()"
+        let g:equ = 1
+    endif
+endfunc
+"------------------end-imapFunc()-----------
+
+""-------------------start Goyo-----------------------"
+nnoremap <Leader>gy :Goyo <CR>
+":Goyo
+"Toggle Goyo
+":Goyo [dimension]
+"Turn on or resize Goyo
+":Goyo!
+"Turn Goyo off
+""-------------------end Goyo-----------------------"
