@@ -40,6 +40,10 @@ Bundle 'joshdick/onedark.vim'
 Bundle 'DoxygenToolkit.vim'
 "成对插入或删除括号，parens，引号。
 Bundle 'jiangmiao/auto-pairs'
+"markdown插件，顺序是tabular要在vim-markdown之前
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'iamcco/markdown-preview.vim'
 "toml文件格式
 Bundle 'cespare/vim-toml'
 "Bundle 'SirVer/ultisnips'
@@ -66,14 +70,16 @@ Bundle 'marijnh/tern_for_vim'
 "Bundle 'aklt/plantuml-syntax'
 "autopep8用于代码按PEP8规范格式化
 Bundle 'tell-k/vim-autopep8'
-"jedi用于代码自动补全, 定义跳转 
-Plugin 'davidhalter/jedi-vim'
+"edi用于代码自动补全, 定义跳转 
+"Plugin 'davidhalter/jedi-vim'
 "flake8用于代码检查
 Plugin 'nvie/vim-flake8'
 "pep8-indent用于自动缩进
 Plugin 'Vimjas/vim-python-pep8-indent'
 "异步运行shell命令，并在同框中显示
 Plugin 'skywind3000/asyncrun.vim'
+"无干扰写作, 专注模式
+Plugin 'junegunn/goyo.vim'
 ""-------------------------end 插件安装-------------------
 
 
@@ -121,7 +127,7 @@ nmap <leader>tt :r ~/.vbuf<cr>
 nnoremap <leader>dg :Dox
 
 "imap <TAB> <C-X><C-N>
-imap <TAB> <C-N>
+"imap <TAB> <C-N>
 "cscope的快捷键设置, CTRL+\, 然后按‘s’，即为对应的命令:cs f s [symbol]
     "s: 查找C语言符号，即查找函数名、宏、枚举值等出现的地方
     "g: 查找函数、宏、枚举等定义的位置，类似ctags所提供的功能
@@ -228,12 +234,13 @@ set cc=120
 "总显示最后一个窗口的状态行；
     "设为1则窗口数多于一个的时候显示最后一个窗口的状态行； "0不显示最后一个窗口的状态行
 set laststatus=2
+let g:equ=0
 "-------------------------end 一些特征设置-------------------
 
 
 "-------------------------start 根据文件后缀添加相应的头部注释-------------------
 "SET Comment START
-autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c exec ":call SetComment()" |normal 10Go
+autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c exec ":call SetComment()" | exec ":call SetimapFuncCtl()" |normal 10Go
 func SetComment()
     if expand("%:e") == 'php'
         call setline(1, "<?php")
@@ -258,7 +265,7 @@ endfunc
 "SET Comment END"
 "
 "SET PythonComment START
-autocmd BufNewFile *py exec ":call SetPythonComment()" |normal 10Go
+autocmd BufNewFile *py exec ":call SetPythonComment()" | exec ":call SetimapFuncCtl()" |normal 10Go
 func SetPythonComment()
     if expand("%:e") == 'py'
         call setline(1, '# python file')
@@ -377,7 +384,7 @@ let g:gutentags_ctags_tagfile = '.tags'
 " 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录 "
 "let s:vim_tags = expand('~/.cache/tags')
 "window下设置的目录路径，不要放在c盘即可
-let s:vim_tags = expand('G:\cache\tags')
+let s:vim_tags = expand('D:\cache\tags')
 let g:gutentags_cache_dir = s:vim_tags
 " 检测 ~/.cache/tags 不存在就新建 "
 if !isdirectory(s:vim_tags)
@@ -414,6 +421,7 @@ endif
 
 "-------------------------start tagbar-------------------
 "let g:tagbar_ctags_bin = '/usr/local/Cellar/ctags/5.8/bin/ctags'
+let g:tagbar_ctags_bin = 'D:\Program Files\Vim\ctags\ctags.exe'
 let g:tagbar_width=30
 let g:tagbar_left=1
 "-------------------------end tagbar-------------------
@@ -429,11 +437,11 @@ let g:indentLine_color_term  =         000
 
 
 "------------------------------- start 设置= + - * 前后自动空格-------------------
-let g:equ=1
-if exists("g:equ")
-inoremap = <c-r>=EqualSign('=')<CR>
-inoremap + <c-r>=EqualSign('+')<CR>
-endif
+"let g:equ=0
+"if exists("g:equ")
+"inoremap = <c-r>=EqualSign('=')<CR>
+"inoremap + <c-r>=EqualSign('+')<CR>
+"endif
 
 function! EqualSign(char)
 let ex1 = getline('.')[col('.') - 3]
@@ -614,12 +622,84 @@ autocmd FileType javascript setlocal omnifunc=tern#Complete
 "
 "----------------------start omnicppcomplete----------------------------------
 "let OmniCpp_GlobalScopeSearch=1 
-let OmniCpp_NamespaceSearch=1
-let OmniCpp_DisplayMode=1
-let OmniCpp_ShowScopeInAbbr=0
+"let OmniCpp_NamespaceSearch=1
+"""let OmniCpp_DisplayMode=1
+"""let OmniCpp_ShowScopeInAbbr=0
 "let OmniCpp_ShowPrototypeInAbbr=1 
 "let OmniCpp_ShowAccess=1 
 "let OmniCpp_MayCompleteDot=1 
-let OmniCpp_MayCompleteArrow=1
-let OmniCpp_MayCompleteScope=1
+"""let OmniCpp_MayCompleteArrow=1
+"""let OmniCpp_MayCompleteScope=1
 "----------------------end omnicppcomplete----------------------------------
+
+
+"-------------------------start vim-markdown----------------------
+"设置不折叠
+"let g:vim_markdown_folding_disabled = 1
+"let g:vim_markdown_toc_autofit = 1
+"set conceallevel=2
+"let g:vim_markdown_conceal  =  0
+"
+" gx: open the link under the cursor 
+autocmd BufNewFile,BufRead *.md set filetype=markdown
+"这里设置不折叠
+let g:vim_markdown_folding_disabled=1       "折叠
+let g:vim_markdown_frontmatter=1
+"隐藏功能，隐藏了一些符号，比如加粗*, 代码``, 提高显示效果
+let g:vim_markdown_conceal = 2
+set concealcursor=""
+"如果安装了vim-markdow的同时又安装了indentLine的话就需要设置这个，否则隐藏功能不好用
+"当光标在此行的时候也不显示隐藏的符号，只有选中才显示。
+let g:indentLine_concealcursor = ''
+" 打开文本目录
+nnoremap <Leader>to :Toc <CR>
+nnoremap <Leader>tp :MarkdownPreview <CR>
+nnoremap <Leader>tc :MarkdownPreviewClose <CR>
+" 格式化表格
+nnoremap <Leader>tf :TableFormat <CR>
+
+"-------------------------end vim-markdown----------------------
+"
+"------------------start-imapFunc()-----------
+"设置映射函数，实现在写c/c++代码是能自动填充空格
+func SetimapFunc()
+    ino , ,<SPACE>
+    ino ; ;<SPACE>
+    ino <= <SPACE><=<SPACE>
+    ino => <SPACE>=><SPACE>
+    ino *= <SPACE>*=<SPACE>
+    ino /= <SPACE>/=<SPACE>
+    ino >> <SPACE>>><SPACE>
+    ino << <SPACE><<<SPACE>
+    ino >= <SPACE>>=<SPACE>
+    ino == <SPACE>==<SPACE>
+    ino += <SPACE>+=<SPACE>
+    ino && <SPACE>&&<SPACE>
+    ino != <SPACE>!=<SPACE>
+    inoremap = <c-r>=EqualSign('=')<CR>
+    inoremap + <c-r>=EqualSign('+')<CR>
+
+endfunc
+    
+"实现按F9控制imap的映射的开与关    
+nnoremap <F9> :call SetimapFuncCtl()<CR>
+func SetimapFuncCtl()
+    if g:equ == 1
+        imapclear
+        let g:equ = 0
+    else
+        exec "call SetimapFunc()"
+        let g:equ = 1
+    endif
+endfunc
+"------------------end-imapFunc()-----------
+
+""-------------------start Goyo-----------------------"
+nnoremap <Leader>gy :Goyo <CR>
+":Goyo
+"Toggle Goyo
+":Goyo [dimension]
+"Turn on or resize Goyo
+":Goyo!
+"Turn Goyo off
+""-------------------end Goyo-----------------------"
