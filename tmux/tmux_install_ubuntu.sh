@@ -14,6 +14,8 @@ echo "-------------start install libevent-dev-------------"
 sudo apt-get install libevent-dev
 echo "-------------start install libncurses5-dev-------------"
 sudo apt-get install libncurses5-dev
+echo "-------------start install byacc-------------"
+sudo apt-get install byacc
 
 echo "--------------------下载源码 tmux---------------------"
 git clone https://github.com/tmux/tmux.git
