@@ -1,7 +1,7 @@
 " set the runtime path to include Vundle and initialize
+set nocompatible
 set rtp+=~/.vim/bundle/Vundle.vim/
 call vundle#rc()
-
 ""-------------------------start 插件安装-------------------
 "let Vundle manage Vundle, required
 Bundle 'gmarik/vundle'
@@ -11,6 +11,10 @@ Bundle 'gmarik/vundle'
 Bundle 'Valloric/ListToggle'
 "自动补全插件
 Bundle 'Valloric/YouCompleteMe'
+"显示git差异的
+Bundle 'airblade/vim-gitgutter'
+"显示差异.尤其是merge时好用
+Bundle 'tpope/vim-fugitive'
 "自动生成ctags
 Bundle 'ludovicchabant/vim-gutentags'
 "显示历史文件列表
@@ -126,6 +130,8 @@ nmap <leader>tt :r ~/.vbuf<cr>
 "生成函数头注释
 nnoremap <leader>dg :Dox
 
+map <C-l> :BufExplorer<CR>
+
 "cscope的快捷键设置, CTRL+\, 然后按‘s’，即为对应的命令:cs f s [symbol]
     "s: 查找C语言符号，即查找函数名、宏、枚举值等出现的地方
     "g: 查找函数、宏、枚举等定义的位置，类似ctags所提供的功能
@@ -181,17 +187,23 @@ set shiftwidth=4
 set tabstop=4
 
 "gvim字体设置
-set guifont=Fira\ Mono\ 14
+set guifont=Fira\ Mono\ Medium\ 14
+set guifontwide=Kai\ Ti\ 15
 "隐藏gvim右边的滚动栏
 set guioptions-=r
+set guioptions-=T
+set guioptions-=m
 "隐藏gvim左边的滚动栏
 set guioptions-=L
 "就是让 vim 关闭所有扩展的功能，尽量模拟 vi 的行为
-set nocompatible
+"set nocompatible
 "该命令指定让 Vim 工作在不兼容模式下
 set nocp
 "去掉输入错误的提示声音
 set noeb
+"关闭gvim声音
+set visualbell t_vb=  "关闭visual bell
+au GuiEnter * set t_vb= "关闭beep
 "设置补全
      ". 扫描当前缓冲区 (忽略 'wrapscan')
      "w 扫描其它窗口的缓冲区
@@ -213,14 +225,19 @@ set cc=120
 "总显示最后一个窗口的状态行；
     "设为1则窗口数多于一个的时候显示最后一个窗口的状态行； "0不显示最后一个窗口的状态行
 set laststatus=2
-"imap空格映射的标志位，表示F9的控制标志位, 初始设置为0，对于非代码文件是不映射的
-let g:equ=0
+"imap空格映射的标志位，表示F9的控制标志位, 初始设置为1，对于非代码文件是不映射的
+let g:equ=1
 "-------------------------end 一些特征设置-------------------
 
+"---------------------------start 启动时文件检测----------------------------
+"自动执行文本缩进
+autocmd  FileType *.php,*.js,*.cc,*.h,*.c,*cpp,*hpp exec ":call SetimapFunc()"
+"---------------------------end 启动时文件检测----------------------------
 
 "-------------------------start 根据文件后缀添加相应的头部注释-------------------
 "SET Comment START
-autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c exec ":call SetComment()" | exec ":call SetimapFuncCtl()"  |normal 10Go
+"autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c,*cpp,*hpp exec ":call SetComment()" | exec ":call SetimapFuncCtl()"  |normal 10Go
+autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c,*cpp,*hpp exec ":call SetComment()"
 func SetComment()
     if expand("%:e") == 'php'
         call setline(1, "<?php")
@@ -296,7 +313,7 @@ endif
 
 
 ""-------------------------start YouCompleteMe-------------------
-"let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
 "let g:ycm_show_diagnostics_ui  =  0                  "关闭语法提示
 let g:ycm_min_num_of_chars_for_completion=2 " 从第2个键入字符就开始罗列匹配项
 "set error or warning signs
@@ -319,6 +336,12 @@ let g:ycm_always_populate_location_list=1
 let g:ycm_open_loclist_on_ycm_diags=1
 let g:ycm_cache_omnifunc=0
 let g:ycm_python_binary_path='/usr/bin/python3'
+
+" 停止提示是否载入本地ycm_extra_conf文件
+let g:ycm_confirm_extra_conf = 0
+
+"加载ctags的字符
+let g:ycm_collect_identifiers_from_tags_files = 1
 
 ""-------------------------end YcmCompleter-------------------
 
@@ -387,7 +410,7 @@ let g:tagbar_left=1
 
 "----------------------start indentLine缩进对齐线的插件---------------------------
 let g:indentLine_char="|"
-let g:indentLine_enabled=1 "开启与关闭，开是1，关是0
+let g:indentLine_enabled=0 "开启与关闭，开是1，关是0
 let g:indentLine_char='¦' 
 let g:indentLine_showFirstIndentLevel  =  1
 let g:indentLine_color_term  =         000
@@ -468,6 +491,10 @@ let g:plantuml_executable_script="~/.mkuml.sh"
 let g:pymode_python = 'python3'
 autocmd VimEnter *.py python3 sys.path.append('.')
 autocmd BufWritePost *.py call Flake8()
+"自动跳转上次退出的位置
+if has("autocmd")
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
 "---------------------start autopep8用于代码按PEP8规范格式化
 
 
@@ -621,7 +648,9 @@ func SetimapFunc()
 endfunc
     
 "实现按F9控制imap的映射的开与关    
-nnoremap <F9> :call SetimapFuncCtl()<CR>
+"nnoremap <F9> :call SetimapFuncCtl()<CR>
+imap <F9> :call SetimapFuncCtl()<CR>
+nmap <F9> :call SetimapFuncCtl()<CR>
 func SetimapFuncCtl()
     if g:equ == 1
         imapclear
