@@ -148,6 +148,9 @@ nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 
 "YcmCompleter
 "在可用的情况下，尝试更改缓冲区以纠正当前行上的诊断错误或警告。如果有多个建议可用，则会显示选项并可以选择一个。
+"
+"停止提示是否载入本地ycm_extra_conf文件
+let g:ycm_confirm_extra_conf = 0
 "map <F9> :YcmCompleter FixIt<CR>
 "nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
 "nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
