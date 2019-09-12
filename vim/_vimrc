@@ -1,5 +1,6 @@
 " set the runtime path to include Vundle and initialize
 set rtp+=~\.vim\bundle\Vundle.vim
+set rtp+=~\YouCompleteMe.git
 call vundle#begin()
 " let Vundle manage Vundle, required ??Vundle????Vundle
 Plugin 'VundleVim/Vundle.vim'
@@ -68,17 +69,17 @@ Bundle 'marijnh/tern_for_vim'
 "palntuml语法插件
 "Bundle 'aklt/plantuml-syntax'
 "autopep8用于代码按PEP8规范格式化
-Bundle 'tell-k/vim-autopep8'
+"Bundle 'tell-k/vim-autopep8'
 "edi用于代码自动补全, 定义跳转 
 "Plugin 'davidhalter/jedi-vim'
 "flake8用于代码检查
-Plugin 'nvie/vim-flake8'
+"Plugin 'nvie/vim-flake8'
 "pep8-indent用于自动缩进
-Plugin 'Vimjas/vim-python-pep8-indent'
+"Plugin 'Vimjas/vim-python-pep8-indent'
 "异步运行shell命令，并在同框中显示
-Plugin 'skywind3000/asyncrun.vim'
+"Plugin 'skywind3000/asyncrun.vim'
 "无干扰写作, 专注模式
-Plugin 'junegunn/goyo.vim'
+"Plugin 'junegunn/goyo.vim'
 ""-------------------------end 插件安装-------------------
 
 
@@ -233,13 +234,17 @@ set cc=120
 "总显示最后一个窗口的状态行；
     "设为1则窗口数多于一个的时候显示最后一个窗口的状态行； "0不显示最后一个窗口的状态行
 set laststatus=2
-let g:equ=0
+let g:equ=1
 "-------------------------end 一些特征设置-------------------
 
+"---------------------------start 启动时文件检测----------------------------
+"自动执行文本缩进
+autocmd  FileType *.php,*.js,*.cc,*.h,*.c,*cpp,*hpp exec ":call SetimapFunc()"
+"---------------------------end 启动时文件检测----------------------------
 
 "-------------------------start 根据文件后缀添加相应的头部注释-------------------
 "SET Comment START
-autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c exec ":call SetComment()" | exec ":call SetimapFuncCtl()" |normal 10Go
+autocmd BufNewFile *.php,*.js,*.cc,*.h,*.c,*.cpp,*.hpp exec ":call SetComment()"
 func SetComment()
     if expand("%:e") == 'php'
         call setline(1, "<?php")
@@ -332,7 +337,7 @@ ino != <SPACE>!=<SPACE>
 
 
 ""-------------------------start YouCompleteMe-------------------
-"let g:ycm_global_ycm_extra_conf='~/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf='D:\Program Files (x86)\Vim\.ycm_extra_conf.py'
 "let g:ycm_show_diagnostics_ui  =  0                  "关闭语法提示
 let g:ycm_min_num_of_chars_for_completion=2 " 从第2个键入字符就开始罗列匹配项
 "set error or warning signs
@@ -401,6 +406,9 @@ let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
 ""-------------------------start cscope-------------------
 if has("cscope")
     "set csprg=E:\Program Files (x86)\cscope-15.7\cscope.exe  "在windows下需要注释掉此行
+    "假如’csto’被设置为0，那么cscope数据将会被优先查找，假如cscope没有返回匹配项，
+    "然后才会查找tag文件。反之，则查找顺序相反。默认值是0
+    "https://my.oschina.net/u/572632/blog/267471
     set csto=0
     set cst
     set nocsverb
@@ -420,7 +428,7 @@ endif
 
 "-------------------------start tagbar-------------------
 "let g:tagbar_ctags_bin = '/usr/local/Cellar/ctags/5.8/bin/ctags'
-let g:tagbar_ctags_bin = 'D:\Program Files\Vim\ctags\ctags.exe'
+let g:tagbar_ctags_bin = 'D:\Program Files (x86)\Vim\ctags\ctags.exe'
 let g:tagbar_width=30
 let g:tagbar_left=1
 "-------------------------end tagbar-------------------
@@ -428,7 +436,7 @@ let g:tagbar_left=1
 
 "----------------------start indentLine缩进对齐线的插件---------------------------
 let g:indentLine_char="|"
-let g:indentLine_enabled=1 "开启与关闭，开是1，关是0
+let g:indentLine_enabled=0 "开启与关闭，开是1，关是0
 let g:indentLine_char='¦' 
 let g:indentLine_showFirstIndentLevel  =  1
 let g:indentLine_color_term  =         000
@@ -514,6 +522,10 @@ let g:plantuml_executable_script="~/.mkuml.sh"
 let g:pymode_python = 'python3'
 autocmd VimEnter *.py python3 sys.path.append('.')
 autocmd BufWritePost *.py call Flake8()
+"自动跳转上次退出的位置
+if has("autocmd")
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
 "---------------------start autopep8用于代码按PEP8规范格式化
 
 
@@ -536,6 +548,7 @@ let g:bufExplorerSplitVertical=1     " Split vertically.
 let g:bufExplorerSplitVertSize = 30  " Split width
 let g:bufExplorerUseCurrentWindow=1  " Open in new window.
 autocmd BufWinEnter \[Buf\ List\] setl nonumber
+map <C-l> :BufExplorer<CR>
 "-------------------------end bufexplorer"历史文件列表-------------------
 
 
