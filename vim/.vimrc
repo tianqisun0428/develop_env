@@ -185,6 +185,8 @@ set ruler
 set expandtab               
 set shiftwidth=4
 set tabstop=4
+"设置在insert模式下，backspace无法删除的问题
+set backspace=indent,eol,start
 
 "gvim字体设置
 set guifont=Fira\ Mono\ Medium\ 14
